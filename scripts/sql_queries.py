@@ -170,7 +170,8 @@ INSERT INTO songplays (start_time, user_id, level,
                             dateadd(month, EXTRACT(month FROM se.tm), 
                                 dateadd(year, EXTRACT(year FROM se.tm) - 
                                     EXTRACT(year FROM 'epoch'::timestamp), 'epoch')))),
-        se.user_id, se.level, ss.song_id, ss.artist_id, se.session_id, se.location, se.user_agent
+        se.user_id, se.level, ss.song_id, ss.artist_id, 
+            se.session_id, se.location, se.user_agent
     FROM (
         SELECT artist_id, artist_name, song_id, title, duration
         FROM staging_songs_table
@@ -276,7 +277,8 @@ INSERT INTO artists (artist_id, name, location, latitude, longitude)
         ) AS id_only_table
     JOIN
         (
-        SELECT song_id, num_songs, artist_id, artist_name, artist_location, artist_latitude, artist_longitude, year
+        SELECT song_id, num_songs, artist_id, artist_name, artist_location, 
+            artist_latitude, artist_longitude, year
         FROM staging_songs_table
         WHERE song_id IS NOT NULL
         AND artist_id IS NOT NULL
@@ -306,7 +308,8 @@ FROM
     SELECT DISTINCT dateadd(hr, EXTRACT(hr FROM tm),
                 dateadd(day, EXTRACT(day FROM tm),
                     dateadd(month, EXTRACT(month FROM tm),
-                        dateadd(year, EXTRACT(year FROM tm) - EXTRACT(year FROM 'epoch'::timestamp), 'epoch')))) 
+                        dateadd(year, EXTRACT(year FROM tm) - 
+                          EXTRACT(year FROM 'epoch'::timestamp), 'epoch')))) 
         AS trunc_time
     FROM
     (
@@ -320,7 +323,12 @@ FROM
 
 # QUERY LISTS
 
-create_table_queries = [staging_events_table_create, staging_songs_table_create, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
-drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+create_table_queries = [staging_events_table_create, staging_songs_table_create, \
+                        songplay_table_create, user_table_create, song_table_create, \
+                        artist_table_create, time_table_create]
+drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, \
+                      songplay_table_drop, user_table_drop, song_table_drop, \
+                      artist_table_drop, time_table_drop]
 copy_table_queries = [staging_events_copy, staging_songs_copy]
-insert_table_queries = [songplay_table_insert, user_table_insert, song_table_insert, artist_table_insert, time_table_insert]
+insert_table_queries = [songplay_table_insert, user_table_insert, \
+                        song_table_insert, artist_table_insert, time_table_insert]
