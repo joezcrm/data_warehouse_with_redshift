@@ -1,8 +1,10 @@
-The project creates a star schema and insert data from data sources. One fact table and four dimension are created as the following. This is a project on Udacity nanodegree of data engineering.
+The project creates a star schema and insert data from data sources using Amazon Redshift. One fact table and four dimension are created as the following. This is a project on Udacity nanodegree of data engineering.
 ## Data Sources
 The log and song data files to be processed are provided by Udacity and are located in Udacity's s3 bucket.  A jsonpath file for log data is also provided, and the jsonpath file for song data is also created.
 ## Assumption
-The project assumes that all records in log data files are unique and the users' information is the newer with larger timestamp.  Since a song file contains only one song, the project assumes that a song record with large song number is newer.
+The project assumes that all records in log data files are unique and the users' information is the newer with larger timestamp.  Since a song file contains only one song, the project assumes that a song record with large song number is newer. The project assumes that an instance of Amazon Redshift is already created and the file **dwh.cfg** should be filled out.
+## Scripts
+The python file **sql_queries.py** defines all the SQL statements needed, including create table statement and insert statement. The python file **create_tables.py** should be executed first to create necessary tables.  The **etl.py** will first copy data to staging tables and then insert data into the following tables.
 ## Fact Table:
 Table Name: **songplays**
 ![songplays](/images/songplays.png)
