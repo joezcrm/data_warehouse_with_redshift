@@ -1,100 +1,37 @@
-The project creates a star schema and insert data from files. One fact table and four dimension are created as the following:
+The project creates a star schema and insert data from data sources. One fact table and four dimension are created as the following. This is a project on Udacity nanodegree of data engineering.
+## Data Sources
+The log and song data files to be processed are provided by Udacity and are located in Udacity's s3 bucket.  A jsonpath file for log data is also provided, and the jsonpath file for song data is also created.
+## Assumption
+The project assumes that all records in log data files are unique and the users' information is the newer with larger timestamp.  Since a song file contains only one song, the project assumes that a song record with large song number is newer.
 ## Fact Table:
-### songplays
-All columns except **songplay_id** are nullable.  
->CREATE TABLE IF NOT EXISTS **songplays**    (    
->**songplay_id** BIGINT IDENTITY(0,1) NOT NULL PRIMARY KEY,   
->**start_time** TIMESTAMP NOT NULL sortkey,   
->**user_id** INTEGER NOT NULL distkey,   
->**level** VARCHAR,   
->**song_id** VARCHAR NOT NULL,   
->**artist_id** VARCHAR NOT NULL,   
->**session_id** INTEGER NOT NULL,   
->**location** VARCHAR,   
->**user_agent** VARCHAR );   
+Table Name: **songplays**
+![songplays](/images/songplays.png)
+The start_time field is chosen to be the sort key and user_id field is choosen to be the distribution key.
+  
 
 ## Dimension Tables:
-### users
-All columns except **user_id** are nullable and only distinct records are accepted.
->CREATE TABLE IF NOT EXISTS **users** (   
->**user_id**              INTEGER NOT NULL PRIMARY KEY sortkey,   
->**first_name**           VARCHAR,  
->**last_name**            VARCHAR,  
->**gender**               VARCHAR,  
->**level**                VARCHAR  
->) diststyle **all**;
+Table Name: **user**
+![users](/images/users.png)
+The user_id field is chosen to be the sort key and the whole table has a distribution style of "all".
 
 ### songs  
-All columns except **song_id** are nullable and only distinct records are acccepted.
->CREATE TABLE IF NOT EXISTS **songs** (   
->**song_id**              VARCHAR NOT NULL PRIMARY KEY sortkey,   
->**title**                VARCHAR,   
->**artist_id**            VARCHAR NOT NULL distkey,   
->**year**                 INTEGER,   
->**duration**             DECIMAL(9,5) );
+Table Name: **songs**
+![songs](/images/songs.png)
+The table is sorted by song_id and distributed by artist_id.
 
 ### artists
-All columns except **artist_id** are nullable and only distinct records are accepted.
->CREATE TABLE IF NOT EXISTS **artists** (   
->**artist_id**            VARCHAR NOT NULL PRIMARY KEY sortkey,   
->**name**                 VARCHAR,   
->**location**             VARCHAR,   
->**latitude**             DECIMAL(9,5),   
->**longitude**            DECIMAL(9,5) )   
->diststyle **all**;
+Table Name: **artists**
+![artists](/images/artists.png)
+The table is sorted by artist_id and has a distribution stytle of "all".
 
 ### time
-All records of time are truncated to include only the date and hour parts.  Only distinct records of time will be inserted.  For weekdays, Sunday is 0, Monday is 1, Tuesday is 2, and so on.
->CREATE TABLE IF NOT EXISTS **time**  (  
->**start_time**           TIMESTAMP NOT NULL PRIMARY KEY sortkey,  
->**hour**                 INTEGER,  
->**day**                  INTEGER,  
->**week**                 INTEGER,  
->**month**                INTEGER,  
->**year**                 INTEGER,  
->**weekday**              INTEGER )  
->diststyle **all**;
-
-Two staging tables are also created to copy data from files. All columns of the staging tables are nullable so that data can be loaded successfully:  
-## Staging Tables:
-### staging_events_table
->CREATE TABLE IF NOT EXISTS **staging_events_table** (  
->**artist**               VARCHAR,  
->**auth**                 VARCHAR,  
->**first_name**           VARCHAR,  
->**gender**               VARCHAR,  
->**item_in_session**      INTEGER,  
->**last_name**            VARCHAR,  
->**length**               DECIMAL(9,5),  
->**level**                VARCHAR,  
->**location**             VARCHAR,  
->**method**               VARCHAR,  
->**page**                 VARCHAR,  
->**registration**         BIGINT,  
->**session_id**           INTEGER,  
->**song**                 VARCHAR,  
->**status**               INTEGER,  
->**ts**                   BIGINT,  
->**user_agent**           VARCHAR,  
->**user_id**              INTEGER distkey );  
+Table Name: **time**
+![time](/images/time.png)
+The table is sorted by start_time and has a distribution stytle of "all"
 
 
-
-### staging_songs_table
->CREATE TABLE IF NOT EXISTS **staging_songs_table** (  
->**num_songs**            BIGINT,  
->**artist_id**            VARCHAR distkey,  
->**artist_latitude**      DECIMAL(9,5),  
->**artist_longitude**     DECIMAL(9,5),  
->**artist_location**      VARCHAR,  
->**artist_name**          VARCHAR,  
->**song_id**              VARCHAR,  
->**title**                VARCHAR,  
->**duration**             DECIMAL(9,5),  
->**year**                 INTEGER );  
-
-
-After records are copied into the staging tables, the corresponding columns are selected and inserted into fact and dimension tables.  The staging tables will be kept in the cloud until they are not needed.
+## Staging Tables
+Two staging tables are also created to copy data from files. All columns of the staging tables are nullable so that data can be loaded successfully. After records are copied into the staging tables, the corresponding columns are selected and inserted into fact and dimension tables.  The staging tables will be kept in the cloud until they are not needed.
 
 ## Examples of Database Usage
 In order to find the pattern of users' activities, a data consumer can query as follow:
